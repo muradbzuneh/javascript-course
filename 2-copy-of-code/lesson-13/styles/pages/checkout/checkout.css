@@ -118,7 +118,19 @@
 .product-quantity .link-primary {
   margin-left: 3px;
 }
+.quantity-input,
+.save-quantity-link {
+  display: none;
+}
 
+.is-quantity-editing .quantity-input,
+.is-quantity-editing .save-quantity-link  {
+  display: initial;
+}
+
+.quantity-input {
+  width: 30px;
+}
 @media (max-width: 1000px) {
   .delivery-options {
     /* grid-column: 1 means this element will be placed

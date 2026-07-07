@@ -1,9 +1,11 @@
-import {cart} from '../data/cart.js'
+import {cart, removeFromCart, updateQuantity} from '../data/cart.js'
 import {formatCurrancy} from '../utils/money.js'
 import {products} from '../data/products.js'
 let orderSummary = '';
 let matchingItem = '';
 
+
+function orderSummaryFun(){
 cart.forEach((cartItem)=>{
   const productId = cartItem.productId
   products.forEach((product) =>{
@@ -11,7 +13,7 @@ cart.forEach((cartItem)=>{
       matchingItem = product;
     }
   });
-  orderSummary +=`<div class="cart-item-container">
+  orderSummary +=`<div class="cart-item-container js-cart-item-container-${matchingItem.id}">
             <div class="delivery-date">
               Delivery date: Tuesday, June 21
             </div>
@@ -29,12 +31,15 @@ cart.forEach((cartItem)=>{
                 </div>
                 <div class="product-quantity">
                   <span>
-                    Quantity: <span class="quantity-label">2</span>
+                    Quantity: <span class="quantity-label js-quantity-label-${matchingItem.id}">${cartItem.quantity}</span>
                   </span>
-                  <span class="update-quantity-link link-primary">
+                  <span class="update-quantity-link link-primary js-update-link" data-product-id="${matchingItem.id}">
                     Update
                   </span>
-                  <span class="delete-quantity-link link-primary">
+                  <input type="
+                   number" class = "quantity-input js-quantity-input-${matchingItem.id}" />
+                  <span class = "save-quantity-link link-primary" data-product-id ="${matchingItem.id}">Save</span>
+                  <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingItem.id}">
                     Delete
                   </span>
                 </div>
@@ -87,5 +92,44 @@ cart.forEach((cartItem)=>{
             </div>
           </div> `;
 });
+}
+orderSummaryFun()
 document.querySelector('.js-order-summary').innerHTML = orderSummary
-console.log('hello')
+document.querySelectorAll('.js-delete-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    const productId = link.dataset.productId;
+    removeFromCart(productId);
+      const container = document.querySelector(`.js-cart-item-container-${productId}`)
+     container.remove()
+     updateQuantityCart()
+  });
+});
+document.querySelectorAll('.js-update-link').forEach((link) =>{
+  link.addEventListener('click', ()=>{
+    let productId = link.dataset.productId
+   let container = document.querySelector(`.js-cart-item-container-${productId}`);
+   container.classList.add("is-quantity-editing")
+  })
+})
+
+document.querySelectorAll('.save-quantity-link').forEach((link) =>{
+  link.addEventListener('click', ()=>{
+    let productId = link.dataset.productId;
+  let container = document.querySelector(`.js-cart-item-container-${productId}`);
+   container.classList.remove("is-quantity-editing")
+   let inputElem = document.querySelector(`.js-quantity-input-${productId}`);
+   let inpVal = Number(inputElem.value)
+   updateQuantity(productId, inpVal)
+   updateQuantityCart()
+   document.querySelector(`.js-quantity-label-${productId}`).innerHTML = inpVal;
+  })
+})
+
+function updateQuantityCart(){
+  let cartQuantity = 0;
+      cart.forEach((item) => {
+      cartQuantity += item.quantity;
+      });
+  document.querySelector('.return-to-home-link').innerHTML = cartQuantity+'items'
+}
+updateQuantityCart()

@@ -1,6 +1,6 @@
 import {products} from '../data/products.js'
 import {formatCurrancy} from '../utils/money.js'
-import {cart, cartQuantity} from '../data/cart.js'
+import {cart, cartQuantity, safeToLocalStorage} from '../data/cart.js'
 
 let productsHTML = '';
 products.forEach((product) => {
@@ -59,16 +59,15 @@ products.forEach((product) => {
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 let timeoutId = {};
   
-function updateQuantity(productId){
+export function updateQuantity(productId){
 let selector = document.querySelector(`.js-product-selector-${productId}`)
-      
 let messagee = document.querySelector(`.js-add-to-cart-text-${productId}`)
-
   messagee.classList.add("added")
     clearTimeout(timeoutId[productId])
-   timeoutId =setTimeout(()=>{
+   timeoutId[productId] =setTimeout(()=>{
     messagee.classList.remove("added")
   }, 2000)
+  
 let cartNum =  Number(selector.value)
   let matchingItem;
   cart.forEach((item) => {
@@ -84,6 +83,7 @@ cart.push({
    quantity: cartNum
      });
    }
+safeToLocalStorage()
   }
    
 document.querySelectorAll('.js-add-to-cart').forEach((button) =>{
