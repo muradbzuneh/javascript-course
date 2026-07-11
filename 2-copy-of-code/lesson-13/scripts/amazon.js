@@ -80,7 +80,8 @@ let cartNum =  Number(selector.value)
   } else {
 cart.push({
  productId: productId,
-   quantity: cartNum
+   quantity: cartNum,
+   deliveryOptionId:1
      });
    }
 safeToLocalStorage()
