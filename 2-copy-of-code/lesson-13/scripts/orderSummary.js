@@ -1,14 +1,14 @@
-import {cart, removeFromCart, updateQuantity} from '../data/cart.js'
+import {cart, removeFromCart, updateQuantity} from '../../data/cart.js'
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js'
-import {deliveryOptions} from '../data/delivery-options.js'
-console.log('Imported:', deliveryOptions);
-import {formatCurrancy} from '../utils/money.js'
-import {products} from '../data/products.js'
+import {deliveryOps} from '../../data/deliveryOps.js'
+import {formatCurrancy} from '../../utils/money.js'
+import {products} from '../../data/products.js'
+export function renderOrderSummary(){
+  console.log('hello')
 const today = dayjs()
 let orderSummary = '';
 let matchingItem = '';
-
-export function orderSummaryFun(){
+function orderSummaryFun(){
 cart.forEach((cartItem)=>{
   const productId = cartItem.productId
   products.forEach((product) =>{
@@ -19,12 +19,14 @@ cart.forEach((cartItem)=>{
   const cartDeliveryId = cartItem.id
   let deliveryOption;
   let deliveryDate
- deliveryOptions.forEach((option) =>{
-   if(option.id = cartDeliveryId){
+ deliveryOps.forEach((option) =>{
+   if(option.deliveryOpsId = cartDeliveryId){
      deliveryOption = option
    }
    deliveryDate = today.add(option.deliveryDays, 'days')
  })
+ 
+  
   orderSummary +=`<div class="cart-item-container js-cart-item-container-${matchingItem.id}">
             <div class="delivery-date">
               Delivery date: ${deliveryDate.format('MMM dddd D')}
@@ -61,30 +63,26 @@ cart.forEach((cartItem)=>{
                 <div class="delivery-options-title">
                   Choose a delivery option:
                 </div>
-              ${deliveryOptionss(matchingItem, cartItem)} 
+              ${deliveryOptionss(matchingItem, cartItem)}
               </div>
             </div>
-            </div> `;
+          </div> `;
 });
-document.querySelector('.js-order-summary').innerHTML = orderSummary
-return orderSummary
 }
-
+orderSummaryFun()
 function deliveryOptionss(matchingItem, cartItem){
   let html = ''
-  deliveryOptions.forEach((deliveryOption) => {
-     const isChecked = deliveryOption.id === cartItem.deliveryOptionId
-  console.log(deliveryOption)
-  console.log(deliveryOption.id )
-   console.log(cartItem.deliveryOptionId)
+  deliveryOps.forEach((deliveryOption) => {
+     const isChecked = deliveryOption.deliveryOpsId === cartItem.deliveryOptionId
   const today = dayjs()
   const deliveryDate = today.add(deliveryOption.deliveryDays, 'days')
   const deliveryPrice = deliveryOption.priceCents === 0 ? 'Free-':`$${formatCurrancy(deliveryOption.priceCents)}-`
   html += ` <div class="delivery-option">
                   <input type="radio"
+                    ${isChecked ? 'checked' : '' }
                     class="delivery-option-input"
                     name="delivery-option-${matchingItem.id}"
-                    ${isChecked ? 'checked' : '' }>
+                    >
                   <div>
                     <div class="delivery-option-date">
                       ${deliveryDate.format('dddd MMM D')}
@@ -96,4 +94,45 @@ function deliveryOptionss(matchingItem, cartItem){
                 </div>`
   })
   return html 
+}
+
+document.querySelector('.js-order-summary').innerHTML = orderSummary
+document.querySelectorAll('.js-delete-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    const productId = link.dataset.productId;
+    removeFromCart(productId);
+      const container = document.querySelector(`.js-cart-item-container-${productId}`)
+     container.remove()
+     updateQuantityCart()
+  });
+});
+document.querySelectorAll('.js-update-link').forEach((link) =>{
+  link.addEventListener('click', ()=>{
+    let productId = link.dataset.productId
+   let container = document.querySelector(`.js-cart-item-container-${productId}`);
+   container.classList.add("is-quantity-editing")
+  })
+})
+
+document.querySelectorAll('.save-quantity-link').forEach((link) =>{
+  link.addEventListener('click', ()=>{
+    let productId = link.dataset.productId;
+  let container = document.querySelector(`.js-cart-item-container-${productId}`);
+   container.classList.remove("is-quantity-editing")
+   let inputElem = document.querySelector(`.js-quantity-input-${productId}`);
+   let inpVal = Number(inputElem.value)
+   updateQuantity(productId, inpVal)
+   updateQuantityCart()
+   document.querySelector(`.js-quantity-label-${productId}`).innerHTML = inpVal;
+  })
+})
+
+function updateQuantityCart(){
+  let cartQuantity = 0;
+      cart.forEach((item) => {
+      cartQuantity += item.quantity;
+      });
+  document.querySelector('.return-to-home-link').innerHTML = cartQuantity+'items'
+}
+updateQuantityCart()
 }
