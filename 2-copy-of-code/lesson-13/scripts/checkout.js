@@ -1,31 +1,20 @@
 import {cart, removeFromCart, updateQuantity, updateDeliveryOption} from '../data/cart.js'
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js'
-import {deliveryOps} from '../data/deliveryOps.js'
+import {paymentSummary} from './checkout/paymentSummary.js'
+import {deliveryOps, getDeliveryOps} from '../data/deliveryOps.js'
 import {formatCurrancy} from '../utils/money.js'
-import {products} from '../data/products.js'
+import {products, getProduct} from '../data/products.js'
+
 const today = dayjs()
 let orderSummary = '';
-let matchingItem = '';
-function orderSummaryFun(){
+export function orderSummaryFun(){
 cart.forEach((cartItem)=>{
   const productId = cartItem.productId
-  products.forEach((product) =>{
-    if(productId === product.id){
-      matchingItem = product;
-    }
-  });
-  let cartDeliveryId = cartItem.deliveryOptionId
-  let deliveryOption;
-  let deliveryDate
-deliveryOps.forEach((option) => {
-  if (option.deliveryOpsId === cartItem.deliveryOptionId) {
-    deliveryOption = option;
-  }
-});
-if (deliveryOption) {
-  deliveryDate = today.add(deliveryOption.deliveryDays, 'days');
-}
-  
+  const matchingItem = getProduct(productId)
+  let deliveryOptionId = cartItem.deliveryOptionId
+  const deliveryOption = getDeliveryOps(deliveryOptionId);
+  let deliveryDate = today.add(deliveryOption.deliveryDays, 'days');
+
   orderSummary +=`<div class="cart-item-container js-cart-item-container-${matchingItem.id}">
             <div class="delivery-date">
               Delivery date: ${deliveryDate.format('MMM dddd D')}
@@ -101,6 +90,7 @@ function deliveryOptionss(matchingItem, cartItem){
     element.addEventListener('click', ()=>{
    const { productId, deliveryOptionId } = element.dataset
   updateDeliveryOption(productId, deliveryOptionId)
+  paymentSummary()
   })
   })
 document.querySelectorAll('.js-delete-link').forEach((link) => {
@@ -110,6 +100,7 @@ document.querySelectorAll('.js-delete-link').forEach((link) => {
       const container = document.querySelector(`.js-cart-item-container-${productId}`)
      container.remove()
      updateQuantityCart()
+     orderSummaryFun()
   });
 });
 document.querySelectorAll('.js-update-link').forEach((link) =>{
@@ -117,7 +108,9 @@ document.querySelectorAll('.js-update-link').forEach((link) =>{
     let productId = link.dataset.productId
    let container = document.querySelector(`.js-cart-item-container-${productId}`);
    container.classList.add("is-quantity-editing")
+   orderSummaryFun()
   })
+  
 })
 
 document.querySelectorAll('.save-quantity-link').forEach((link) =>{
@@ -143,3 +136,4 @@ function updateQuantityCart(){
 updateQuantityCart()
 }
 orderSummaryFun()
+paymentSummary()
