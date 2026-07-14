@@ -93,6 +93,7 @@ function deliveryOptionss(matchingItem, cartItem){
   paymentSummary()
   })
   })
+//delete listner
 document.querySelectorAll('.js-delete-link').forEach((link) => {
   link.addEventListener('click', () => {
     const productId = link.dataset.productId;
@@ -103,6 +104,7 @@ document.querySelectorAll('.js-delete-link').forEach((link) => {
      orderSummaryFun()
   });
 });
+// update listener
 document.querySelectorAll('.js-update-link').forEach((link) =>{
   link.addEventListener('click', ()=>{
     let productId = link.dataset.productId
@@ -110,15 +112,14 @@ document.querySelectorAll('.js-update-link').forEach((link) =>{
    container.classList.add("is-quantity-editing")
    orderSummaryFun()
   })
-  
 })
-
+//save listener
 document.querySelectorAll('.save-quantity-link').forEach((link) =>{
   link.addEventListener('click', ()=>{
     let productId = link.dataset.productId;
   let container = document.querySelector(`.js-cart-item-container-${productId}`);
-   container.classList.remove("is-quantity-editing")
-   let inputElem = document.querySelector(`.js-quantity-input-${productId}`);
+  container.classList.remove("is-quantity-editing")
+  let inputElem = document.querySelector(`.js-quantity-input-${productId}`);
    let inpVal = Number(inputElem.value)
    updateQuantity(productId, inpVal)
    updateQuantityCart()
