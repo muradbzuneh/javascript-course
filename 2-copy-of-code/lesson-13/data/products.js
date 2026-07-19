@@ -20,9 +20,35 @@ getUrl(){
 getPrice(){
   return `${formatCurrancy(this.priceCents)}`
 }
+linkHtml(){
+    return '';
+  }
+}
+class Clothing extends Products{
+  id;
+  sizeChartLink;
+  constructor(productDetials){
+    super(productDetials)
+    this.sizeChartLink = productDetials.sizeChartLink
+  }
+  linkHtml(){
+  return `<a href ="/${this.sizeChartLink}" target="_blank">sizeChartLink</a>`
+  }
 }
 
-const 
+class Appliance extends Products{
+  instructionLink;
+  warrantyLink;
+  constructor(productDetials){
+    super(productDetials)
+    this.instructionLink = productDetials.instructionLink
+    this.warrantyLink = productDetials.warrantyLink
+  }
+  linkHtml(){
+  return `<a href ="/${this.instructionLink}" target="_blank">Instruction Link</a>
+  <a href ="/${this.warrantyLink}" target="_blank">warranty Link</a> `
+  }
+}
 
 export function getProduct(productId){
   let matchingItem = {};
@@ -95,7 +121,10 @@ export const products = [
       "toaster",
       "kitchen",
       "appliances"
-    ]
+    ],
+  type: "appliance",
+  instructionLink :"images/appliance-instructions.png",
+  warrantyLink: "images/appliance-warranty.png"
   },
   {
     id: "3ebe75dc-64d2-4137-8860-1f5a963e534b",
@@ -695,6 +724,11 @@ export const products = [
     ]
   }
 ].map((productDetials) =>{
-  return new Products(productDetials)
+  if (productDetials.type === "clothing"){
+   return new Clothing(productDetials)
+  }
+  if (productDetials.type === "appliance"){
+    return new Appliance(productDetials)
+  }
+  else  return new Products(productDetials)
 });
-console.log(Products)

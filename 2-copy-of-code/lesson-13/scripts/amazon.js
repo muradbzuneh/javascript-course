@@ -41,8 +41,9 @@ products.forEach((product) => {
           <option value="10">10</option>
         </select>
       </div>
-
-      <div class="product-spacer"></div>
+       ${product.linkHtml()}
+      <div class="product-spacer">
+      </div>
       <div class="added-to-cart js-add-to-cart-text-${product.id}" data->
         <img src="images/icons/checkmark.png">
         Added
