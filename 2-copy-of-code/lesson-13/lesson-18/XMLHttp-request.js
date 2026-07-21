@@ -57,7 +57,7 @@ async function addToSuperSimple(){
   }
 catch (error){
   if(error.status === 400){
-    const responseError =  await error.json
+    const responseError =  await error.json()
     console.log(responseError)
   }
  else {
@@ -96,3 +96,13 @@ async function loadDataFromAmazon(){
 }
 
 loadDataFromAmazon()
+
+async function loadProduct(){
+  const products =  await fetch('https://supersimplebackend.dev/products')
+ const product = await products.json()
+ console.log('wait product')
+ return product
+}
+loadProduct().then((value) =>{
+  console.log(value)
+})

@@ -1,7 +1,8 @@
-import {products} from '../data/products.js'
+import {products, loadProduct} from '../data/products.js'
 import {formatCurrancy} from '../utils/money.js'
 import {cart, cartQuantity, safeToLocalStorage} from '../data/cart.js'
 
+loadProduct()
 let productsHTML = '';
 products.forEach((product) => {
   productsHTML += `

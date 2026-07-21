@@ -1,6 +1,6 @@
 import {formatCurrancy} from '../utils/money.js'
 
-class Products {
+export class Products {
  id;
  image;
  name;
@@ -60,8 +60,25 @@ export function getProduct(productId){
   });
   return matchingItem
 }
-
-export const products = [
+export let products =[];
+export async function loadProduct(){
+  const response =  await fetch('https://supersimplebackend.dev/products')
+ const responseData = await products.json()
+ console.log('wait product')
+ return responseData
+}
+loadProduct().then((value) =>{
+  products = (value).map((productDetails) =>{
+  if (productDetails.type === "clothing"){
+   return new Clothing(productDetails)
+  }
+  if (productDetails.type === "appliance"){
+    return new Appliance(productDetails)
+  }
+  else  return new Products(productDetails)
+});
+})
+/*export const products = [
   {
     id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
     image: "images/products/athletic-cotton-socks-6-pairs.jpg",
@@ -731,4 +748,4 @@ export const products = [
     return new Appliance(productDetials)
   }
   else  return new Products(productDetials)
-});
+});*/
